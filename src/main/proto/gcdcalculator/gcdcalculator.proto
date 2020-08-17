@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package gcdcalculator;
+
+option java_package = "kz.mircella.grpc.gcdcalculator";
+option java_multiple_files = true;
+
+message CalculateGCDRequest {
+  int32 first_number = 1;
+  int32 second_number = 2;
+}
+
+message GCDResponse {
+  int32 gcd = 1;
+}
+
+service GCDCalculator {
+  rpc calculateGCD(CalculateGCDRequest) returns (GCDResponse);
+}
