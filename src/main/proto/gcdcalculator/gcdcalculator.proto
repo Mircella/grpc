@@ -15,5 +15,5 @@ message GCDResponse {
 }
 
 service GCDCalculator {
-  rpc calculateGCD(CalculateGCDRequest) returns (GCDResponse);
+  rpc calculateGCD(CalculateGCDRequest) returns (GCDResponse) {};
 }

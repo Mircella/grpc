@@ -36,11 +36,11 @@ public final class Gcdcalculator {
       "\n!gcdcalculator/gcdcalculator.proto\022\rgcd" +
       "calculator\"B\n\023CalculateGCDRequest\022\024\n\014fir" +
       "st_number\030\001 \001(\005\022\025\n\rsecond_number\030\002 \001(\005\"\032" +
-      "\n\013GCDResponse\022\013\n\003gcd\030\001 \001(\0052_\n\rGCDCalcula" +
-      "tor\022N\n\014calculateGCD\022\".gcdcalculator.Calc" +
+      "\n\013GCDResponse\022\013\n\003gcd\030\001 \001(\0052a\n\rGCDCalcula" +
+      "tor\022P\n\014calculateGCD\022\".gcdcalculator.Calc" +
       "ulateGCDRequest\032\032.gcdcalculator.GCDRespo" +
-      "nseB\"\n\036kz.mircella.grpc.gcdcalculatorP\001b" +
-      "\006proto3"
+      "nse\"\000B\"\n\036kz.mircella.grpc.gcdcalculatorP" +
+      "\001b\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,

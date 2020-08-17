@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+package weather;
+
+option java_package = "kz.mircella.grpc.weather";
+option java_multiple_files = true;
+
+message Temperature {
+  int32 degree = 1;
+  Unit unit = 2;
+
+  enum Unit {
+    CELSIUS = 0;
+    FAHRENHEIT = 1;
+  }
+}
+
+message Humidity {
+  double percentage = 1;
+}
+
+message WeatherRequest {
+  int32 longitude = 1;
+  int32 latitude = 2;
+}
+
+message WeatherResponse {
+  Temperature temperature = 1;
+  Humidity humidity = 2;
+}
+
+service WeatherService {
+
+  // Server Streaming API
+  rpc getWeather(WeatherRequest) returns (stream WeatherResponse) {};
+}
