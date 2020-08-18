@@ -49,9 +49,9 @@ private static final long serialVersionUID = 0L;
           case 0:
             done = true;
             break;
-          case 8: {
+          case 9: {
 
-            degree_ = input.readInt32();
+            degree_ = input.readDouble();
             break;
           }
           case 16: {
@@ -201,13 +201,13 @@ private static final long serialVersionUID = 0L;
   }
 
   public static final int DEGREE_FIELD_NUMBER = 1;
-  private int degree_;
+  private double degree_;
   /**
-   * <code>int32 degree = 1;</code>
+   * <code>double degree = 1;</code>
    * @return The degree.
    */
   @java.lang.Override
-  public int getDegree() {
+  public double getDegree() {
     return degree_;
   }
 
@@ -244,8 +244,8 @@ private static final long serialVersionUID = 0L;
   @java.lang.Override
   public void writeTo(com.google.protobuf.CodedOutputStream output)
                       throws java.io.IOException {
-    if (degree_ != 0) {
-      output.writeInt32(1, degree_);
+    if (degree_ != 0D) {
+      output.writeDouble(1, degree_);
     }
     if (unit_ != kz.mircella.grpc.weather.Temperature.Unit.CELSIUS.getNumber()) {
       output.writeEnum(2, unit_);
@@ -259,9 +259,9 @@ private static final long serialVersionUID = 0L;
     if (size != -1) return size;
 
     size = 0;
-    if (degree_ != 0) {
+    if (degree_ != 0D) {
       size += com.google.protobuf.CodedOutputStream
-        .computeInt32Size(1, degree_);
+        .computeDoubleSize(1, degree_);
     }
     if (unit_ != kz.mircella.grpc.weather.Temperature.Unit.CELSIUS.getNumber()) {
       size += com.google.protobuf.CodedOutputStream
@@ -282,8 +282,9 @@ private static final long serialVersionUID = 0L;
     }
     kz.mircella.grpc.weather.Temperature other = (kz.mircella.grpc.weather.Temperature) obj;
 
-    if (getDegree()
-        != other.getDegree()) return false;
+    if (java.lang.Double.doubleToLongBits(getDegree())
+        != java.lang.Double.doubleToLongBits(
+            other.getDegree())) return false;
     if (unit_ != other.unit_) return false;
     if (!unknownFields.equals(other.unknownFields)) return false;
     return true;
@@ -297,7 +298,8 @@ private static final long serialVersionUID = 0L;
     int hash = 41;
     hash = (19 * hash) + getDescriptor().hashCode();
     hash = (37 * hash) + DEGREE_FIELD_NUMBER;
-    hash = (53 * hash) + getDegree();
+    hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+        java.lang.Double.doubleToLongBits(getDegree()));
     hash = (37 * hash) + UNIT_FIELD_NUMBER;
     hash = (53 * hash) + unit_;
     hash = (29 * hash) + unknownFields.hashCode();
@@ -433,7 +435,7 @@ private static final long serialVersionUID = 0L;
     @java.lang.Override
     public Builder clear() {
       super.clear();
-      degree_ = 0;
+      degree_ = 0D;
 
       unit_ = 0;
 
@@ -513,7 +515,7 @@ private static final long serialVersionUID = 0L;
 
     public Builder mergeFrom(kz.mircella.grpc.weather.Temperature other) {
       if (other == kz.mircella.grpc.weather.Temperature.getDefaultInstance()) return this;
-      if (other.getDegree() != 0) {
+      if (other.getDegree() != 0D) {
         setDegree(other.getDegree());
       }
       if (other.unit_ != 0) {
@@ -548,33 +550,33 @@ private static final long serialVersionUID = 0L;
       return this;
     }
 
-    private int degree_ ;
+    private double degree_ ;
     /**
-     * <code>int32 degree = 1;</code>
+     * <code>double degree = 1;</code>
      * @return The degree.
      */
     @java.lang.Override
-    public int getDegree() {
+    public double getDegree() {
       return degree_;
     }
     /**
-     * <code>int32 degree = 1;</code>
+     * <code>double degree = 1;</code>
      * @param value The degree to set.
      * @return This builder for chaining.
      */
-    public Builder setDegree(int value) {
+    public Builder setDegree(double value) {
       
       degree_ = value;
       onChanged();
       return this;
     }
     /**
-     * <code>int32 degree = 1;</code>
+     * <code>double degree = 1;</code>
      * @return This builder for chaining.
      */
     public Builder clearDegree() {
       
-      degree_ = 0;
+      degree_ = 0D;
       onChanged();
       return this;
     }

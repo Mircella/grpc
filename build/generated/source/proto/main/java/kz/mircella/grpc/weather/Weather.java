@@ -44,17 +44,19 @@ public final class Weather {
   static {
     java.lang.String[] descriptorData = {
       "\n\025weather/weather.proto\022\007weather\"k\n\013Temp" +
-      "erature\022\016\n\006degree\030\001 \001(\005\022\'\n\004unit\030\002 \001(\0162\031." +
+      "erature\022\016\n\006degree\030\001 \001(\001\022\'\n\004unit\030\002 \001(\0162\031." +
       "weather.Temperature.Unit\"#\n\004Unit\022\013\n\007CELS" +
       "IUS\020\000\022\016\n\nFAHRENHEIT\020\001\"\036\n\010Humidity\022\022\n\nper" +
       "centage\030\001 \001(\001\"5\n\016WeatherRequest\022\021\n\tlongi" +
       "tude\030\001 \001(\005\022\020\n\010latitude\030\002 \001(\005\"a\n\017WeatherR" +
       "esponse\022)\n\013temperature\030\001 \001(\0132\024.weather.T" +
       "emperature\022#\n\010humidity\030\002 \001(\0132\021.weather.H" +
-      "umidity2U\n\016WeatherService\022C\n\ngetWeather\022" +
-      "\027.weather.WeatherRequest\032\030.weather.Weath" +
-      "erResponse\"\0000\001B\034\n\030kz.mircella.grpc.weath" +
-      "erP\001b\006proto3"
+      "umidity2\240\001\n\016WeatherService\022I\n\020getWeather" +
+      "Stream\022\027.weather.WeatherRequest\032\030.weathe" +
+      "r.WeatherResponse\"\0000\001\022C\n\ngetWeather\022\027.we" +
+      "ather.WeatherRequest\032\030.weather.WeatherRe" +
+      "sponse\"\000(\001B\034\n\030kz.mircella.grpc.weatherP\001" +
+      "b\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,

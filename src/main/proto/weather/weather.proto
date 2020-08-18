@@ -6,7 +6,7 @@ option java_package = "kz.mircella.grpc.weather";
 option java_multiple_files = true;
 
 message Temperature {
-  int32 degree = 1;
+  double degree = 1;
   Unit unit = 2;
 
   enum Unit {
@@ -32,5 +32,8 @@ message WeatherResponse {
 service WeatherService {
 
   // Server Streaming API
-  rpc getWeather(WeatherRequest) returns (stream WeatherResponse) {};
+  rpc getWeatherStream(WeatherRequest) returns (stream WeatherResponse) {};
+
+  // Client Streaming API
+  rpc getWeather(stream WeatherRequest) returns (WeatherResponse){};
 }

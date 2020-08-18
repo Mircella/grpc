@@ -8,10 +8,10 @@ public interface TemperatureOrBuilder extends
     com.google.protobuf.MessageOrBuilder {
 
   /**
-   * <code>int32 degree = 1;</code>
+   * <code>double degree = 1;</code>
    * @return The degree.
    */
-  int getDegree();
+  double getDegree();
 
   /**
    * <code>.weather.Temperature.Unit unit = 2;</code>

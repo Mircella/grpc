@@ -6,13 +6,17 @@ import org.apache.commons.lang3.RandomUtils;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.BinaryOperator;
 import java.util.stream.IntStream;
 
 public class WeatherServiceImpl extends WeatherServiceGrpc.WeatherServiceImplBase {
 
-    private static Map<GeoLocation, WeatherResponse> weatherRepository = new ConcurrentHashMap<>();
+    private static final Map<GeoLocation, WeatherResponse> weatherRepository = new ConcurrentHashMap<>();
 
     public WeatherServiceImpl() {
         GeoLocation geoLocation = new GeoLocation(0, 0, 100, 100);
@@ -20,7 +24,7 @@ public class WeatherServiceImpl extends WeatherServiceGrpc.WeatherServiceImplBas
     }
 
     @Override
-    public void getWeather(WeatherRequest request, StreamObserver<WeatherResponse> responseObserver) {
+    public void getWeatherStream(WeatherRequest request, StreamObserver<WeatherResponse> responseObserver) {
         int latitude = request.getLatitude();
         int longitude = request.getLongitude();
         try {
@@ -39,6 +43,55 @@ public class WeatherServiceImpl extends WeatherServiceGrpc.WeatherServiceImplBas
         }
     }
 
+    @Override
+    // StreamObserver of requests is returned as client requests are asynchronous and we need to handle each request in a stream
+    public StreamObserver<WeatherRequest> getWeather(StreamObserver<WeatherResponse> responseObserver) {
+        return new StreamObserver<WeatherRequest>() {
+            final List<WeatherResponse> weatherResponses = new ArrayList<>();
+
+            @Override
+            public void onNext(WeatherRequest request) {
+                // client sends request
+                int latitude = request.getLatitude();
+                int longitude = request.getLongitude();
+                WeatherResponse weatherResponse = generateWeather(latitude, longitude);
+                weatherResponses.add(weatherResponse);
+            }
+
+            @Override
+            public void onError(Throwable t) {
+                // client sends error
+            }
+
+            @Override
+            public void onCompleted() {
+                // client is done
+                responseObserver.onNext(calculateAverageWeather(weatherResponses));
+                // and response is returned
+                responseObserver.onCompleted();
+            }
+        };
+    }
+
+    private WeatherResponse calculateAverageWeather(List<WeatherResponse> weatherResponses) {
+        Optional<WeatherResponse> averageWeather = weatherResponses.stream().reduce(new BinaryOperator<WeatherResponse>() {
+            @Override
+            public WeatherResponse apply(WeatherResponse first, WeatherResponse second) {
+                double temperatureValue = first.getTemperature().getDegree() + second.getTemperature().getDegree();
+                Temperature temperature = Temperature.newBuilder().setDegree(temperatureValue).build();
+
+                double humidityValue = first.getHumidity().getPercentage() + second.getHumidity().getPercentage();
+                Humidity humidity = Humidity.newBuilder().setPercentage(humidityValue).build();
+                return WeatherResponse.newBuilder().setTemperature(temperature).setHumidity(humidity).build();
+            }
+        }).map(it -> {
+            Humidity averageHumidity = Humidity.newBuilder().setPercentage(it.getHumidity().getPercentage() / weatherResponses.size()).build();
+            Temperature averageTemperature = Temperature.newBuilder().setDegree(it.getTemperature().getDegree() / weatherResponses.size()).build();
+            return WeatherResponse.newBuilder().setHumidity(averageHumidity).setTemperature(averageTemperature).build();
+        });
+        return averageWeather.orElse(null);
+    }
+
     private WeatherResponse generateWeather(int latitude, int longitude) {
         GeoLocation geoLocation = weatherRepository.keySet()
                 .stream()
@@ -50,12 +103,10 @@ public class WeatherServiceImpl extends WeatherServiceGrpc.WeatherServiceImplBas
         return randomWeatherResponse;
     }
 
-    private WeatherResponse randomWeatherResponse(GeoLocation location) {
-        double humidityPercentage = BigDecimal.valueOf(Math.abs(RandomUtils.nextDouble(location.startLongitude, location.endLongitude)))
-                .divide(new BigDecimal(location.endLongitude), new MathContext(2, RoundingMode.DOWN))
-                .multiply(new BigDecimal(100)).doubleValue();
+    private WeatherResponse randomWeatherResponse(GeoLocation geoLocation) {
+        double humidityPercentage = BigDecimal.valueOf(RandomUtils.nextDouble(0, 100)).round(new MathContext(2, RoundingMode.DOWN)).doubleValue();
         Humidity humidity = Humidity.newBuilder().setPercentage(humidityPercentage).build();
-        int temperatureValue = RandomUtils.nextInt(location.startLatitude, location.endLatitude);
+        double temperatureValue = RandomUtils.nextInt(0, 50);
         Temperature temperature = Temperature.newBuilder().setDegree(temperatureValue).setUnit(Temperature.Unit.CELSIUS).build();
         return WeatherResponse.newBuilder().setHumidity(humidity).setTemperature(temperature).build();
     }
