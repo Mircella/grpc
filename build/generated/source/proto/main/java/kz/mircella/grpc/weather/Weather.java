@@ -51,12 +51,14 @@ public final class Weather {
       "tude\030\001 \001(\005\022\020\n\010latitude\030\002 \001(\005\"a\n\017WeatherR" +
       "esponse\022)\n\013temperature\030\001 \001(\0132\024.weather.T" +
       "emperature\022#\n\010humidity\030\002 \001(\0132\021.weather.H" +
-      "umidity2\240\001\n\016WeatherService\022I\n\020getWeather" +
+      "umidity2\355\001\n\016WeatherService\022I\n\020getWeather" +
       "Stream\022\027.weather.WeatherRequest\032\030.weathe" +
       "r.WeatherResponse\"\0000\001\022C\n\ngetWeather\022\027.we" +
       "ather.WeatherRequest\032\030.weather.WeatherRe" +
-      "sponse\"\000(\001B\034\n\030kz.mircella.grpc.weatherP\001" +
-      "b\006proto3"
+      "sponse\"\000(\001\022K\n\020generateWeathers\022\027.weather" +
+      ".WeatherRequest\032\030.weather.WeatherRespons" +
+      "e\"\000(\0010\001B\034\n\030kz.mircella.grpc.weatherP\001b\006p" +
+      "roto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,

@@ -36,4 +36,6 @@ service WeatherService {
 
   // Client Streaming API
   rpc getWeather(stream WeatherRequest) returns (WeatherResponse){};
+
+  rpc generateWeathers(stream WeatherRequest) returns (stream WeatherResponse){};
 }

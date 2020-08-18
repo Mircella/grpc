@@ -89,6 +89,37 @@ public final class WeatherServiceGrpc {
     return getGetWeatherMethod;
   }
 
+  private static volatile io.grpc.MethodDescriptor<kz.mircella.grpc.weather.WeatherRequest,
+      kz.mircella.grpc.weather.WeatherResponse> getGenerateWeathersMethod;
+
+  @io.grpc.stub.annotations.RpcMethod(
+      fullMethodName = SERVICE_NAME + '/' + "generateWeathers",
+      requestType = kz.mircella.grpc.weather.WeatherRequest.class,
+      responseType = kz.mircella.grpc.weather.WeatherResponse.class,
+      methodType = io.grpc.MethodDescriptor.MethodType.BIDI_STREAMING)
+  public static io.grpc.MethodDescriptor<kz.mircella.grpc.weather.WeatherRequest,
+      kz.mircella.grpc.weather.WeatherResponse> getGenerateWeathersMethod() {
+    io.grpc.MethodDescriptor<kz.mircella.grpc.weather.WeatherRequest, kz.mircella.grpc.weather.WeatherResponse> getGenerateWeathersMethod;
+    if ((getGenerateWeathersMethod = WeatherServiceGrpc.getGenerateWeathersMethod) == null) {
+      synchronized (WeatherServiceGrpc.class) {
+        if ((getGenerateWeathersMethod = WeatherServiceGrpc.getGenerateWeathersMethod) == null) {
+          WeatherServiceGrpc.getGenerateWeathersMethod = getGenerateWeathersMethod =
+              io.grpc.MethodDescriptor.<kz.mircella.grpc.weather.WeatherRequest, kz.mircella.grpc.weather.WeatherResponse>newBuilder()
+              .setType(io.grpc.MethodDescriptor.MethodType.BIDI_STREAMING)
+              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "generateWeathers"))
+              .setSampledToLocalTracing(true)
+              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  kz.mircella.grpc.weather.WeatherRequest.getDefaultInstance()))
+              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  kz.mircella.grpc.weather.WeatherResponse.getDefaultInstance()))
+              .setSchemaDescriptor(new WeatherServiceMethodDescriptorSupplier("generateWeathers"))
+              .build();
+        }
+      }
+    }
+    return getGenerateWeathersMethod;
+  }
+
   /**
    * Creates a new async stub that supports all call types for the service
    */
@@ -157,6 +188,13 @@ public final class WeatherServiceGrpc {
       return asyncUnimplementedStreamingCall(getGetWeatherMethod(), responseObserver);
     }
 
+    /**
+     */
+    public io.grpc.stub.StreamObserver<kz.mircella.grpc.weather.WeatherRequest> generateWeathers(
+        io.grpc.stub.StreamObserver<kz.mircella.grpc.weather.WeatherResponse> responseObserver) {
+      return asyncUnimplementedStreamingCall(getGenerateWeathersMethod(), responseObserver);
+    }
+
     @java.lang.Override public final io.grpc.ServerServiceDefinition bindService() {
       return io.grpc.ServerServiceDefinition.builder(getServiceDescriptor())
           .addMethod(
@@ -173,6 +211,13 @@ public final class WeatherServiceGrpc {
                 kz.mircella.grpc.weather.WeatherRequest,
                 kz.mircella.grpc.weather.WeatherResponse>(
                   this, METHODID_GET_WEATHER)))
+          .addMethod(
+            getGenerateWeathersMethod(),
+            asyncBidiStreamingCall(
+              new MethodHandlers<
+                kz.mircella.grpc.weather.WeatherRequest,
+                kz.mircella.grpc.weather.WeatherResponse>(
+                  this, METHODID_GENERATE_WEATHERS)))
           .build();
     }
   }
@@ -211,6 +256,14 @@ public final class WeatherServiceGrpc {
         io.grpc.stub.StreamObserver<kz.mircella.grpc.weather.WeatherResponse> responseObserver) {
       return asyncClientStreamingCall(
           getChannel().newCall(getGetWeatherMethod(), getCallOptions()), responseObserver);
+    }
+
+    /**
+     */
+    public io.grpc.stub.StreamObserver<kz.mircella.grpc.weather.WeatherRequest> generateWeathers(
+        io.grpc.stub.StreamObserver<kz.mircella.grpc.weather.WeatherResponse> responseObserver) {
+      return asyncBidiStreamingCall(
+          getChannel().newCall(getGenerateWeathersMethod(), getCallOptions()), responseObserver);
     }
   }
 
@@ -257,6 +310,7 @@ public final class WeatherServiceGrpc {
 
   private static final int METHODID_GET_WEATHER_STREAM = 0;
   private static final int METHODID_GET_WEATHER = 1;
+  private static final int METHODID_GENERATE_WEATHERS = 2;
 
   private static final class MethodHandlers<Req, Resp> implements
       io.grpc.stub.ServerCalls.UnaryMethod<Req, Resp>,
@@ -291,6 +345,9 @@ public final class WeatherServiceGrpc {
       switch (methodId) {
         case METHODID_GET_WEATHER:
           return (io.grpc.stub.StreamObserver<Req>) serviceImpl.getWeather(
+              (io.grpc.stub.StreamObserver<kz.mircella.grpc.weather.WeatherResponse>) responseObserver);
+        case METHODID_GENERATE_WEATHERS:
+          return (io.grpc.stub.StreamObserver<Req>) serviceImpl.generateWeathers(
               (io.grpc.stub.StreamObserver<kz.mircella.grpc.weather.WeatherResponse>) responseObserver);
         default:
           throw new AssertionError();
@@ -345,6 +402,7 @@ public final class WeatherServiceGrpc {
               .setSchemaDescriptor(new WeatherServiceFileDescriptorSupplier())
               .addMethod(getGetWeatherStreamMethod())
               .addMethod(getGetWeatherMethod())
+              .addMethod(getGenerateWeathersMethod())
               .build();
         }
       }

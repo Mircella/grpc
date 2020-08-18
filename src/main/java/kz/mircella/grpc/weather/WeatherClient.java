@@ -18,13 +18,72 @@ public class WeatherClient {
         channel = ManagedChannelBuilder.forAddress("localhost", 50053).usePlaintext().build();
         serverStreamingCall(channel);
         clientStreamingCall(channel);
+        biDiStreamingCall(channel);
 
         // shutdown the channel
         System.out.println("Shutting down the channel...");
         channel.shutdown();
     }
 
+    private void biDiStreamingCall(ManagedChannel channel) {
+        System.out.println("BiDiStreaming...");
+        // creating client (stub), must be asynchronous
+        WeatherServiceGrpc.WeatherServiceStub asyncClient = WeatherServiceGrpc.newStub(channel);
+
+        // if method is async -> to make function wait till server responds otherwise requests are sent without waiting until server terminates
+        CountDownLatch latch = new CountDownLatch(1);
+        StreamObserver<WeatherRequest> weatherRequestObserver = asyncClient.generateWeathers(new StreamObserver<WeatherResponse>() {
+            @Override
+            public void onNext(WeatherResponse weatherResponse) {
+                // next response from server
+                // in case of client streaming onNext() is called once
+                System.out.printf(
+                        "Weather:t=%s %s,humidity=%s%n",
+                        weatherResponse.getTemperature().getDegree(),
+                        weatherResponse.getTemperature().getUnit(),
+                        weatherResponse.getHumidity().getPercentage()
+                );
+            }
+
+            @Override
+            public void onError(Throwable t) {
+                // ignore
+            }
+
+            @Override
+            public void onCompleted() {
+                // server is done sending data
+                // in case of client streaming onCompleted() is returned right after onNext()
+                System.out.println("Server is done");
+
+                // allows method to finish, as countDownLatch releases when value reaches zero
+                latch.countDown();
+            }
+        });
+        // passing data to request observer to send to server
+        IntStream.range(0, 50).forEach(it -> {
+            System.out.println("Sending request " + it);
+            weatherRequestObserver.onNext(
+                    WeatherRequest.newBuilder()
+                            .setLongitude(RandomUtils.nextInt(0, 1000) + it)
+                            .setLatitude(RandomUtils.nextInt(0, 1000) - it)
+                            .build());
+            try {
+                Thread.sleep(RandomUtils.nextLong(0, 3000));
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        });
+        weatherRequestObserver.onCompleted();
+        try {
+            latch.await(); // makes method to keep running and await until smth will release it
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
     private void clientStreamingCall(ManagedChannel channel) {
+        System.out.println("ClientStreaming...");
         // creating client (stub), for client streaming client must be asynchronous
         WeatherServiceGrpc.WeatherServiceStub asyncClient = WeatherServiceGrpc.newStub(channel);
 
@@ -78,6 +137,7 @@ public class WeatherClient {
     }
 
     private void serverStreamingCall(ManagedChannel channel) {
+        System.out.println("ServerStreaming...");
         WeatherServiceGrpc.WeatherServiceBlockingStub syncClient = WeatherServiceGrpc.newBlockingStub(channel);
         WeatherRequest request = WeatherRequest.newBuilder()
                 .setLatitude(RandomUtils.nextInt())
