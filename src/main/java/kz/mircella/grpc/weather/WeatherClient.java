@@ -1,9 +1,14 @@
 package kz.mircella.grpc.weather;
 
 import io.grpc.*;
+import io.grpc.netty.shaded.io.grpc.netty.GrpcSslContexts;
+import io.grpc.netty.shaded.io.grpc.netty.NettyChannelBuilder;
+import io.grpc.netty.shaded.io.netty.handler.ssl.SslContext;
 import io.grpc.stub.StreamObserver;
 import org.apache.commons.lang3.RandomUtils;
 
+import javax.net.ssl.SSLException;
+import java.io.File;
 import java.util.Iterator;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -13,13 +18,29 @@ import java.util.stream.IntStream;
 public class WeatherClient {
 
     ManagedChannel channel;
+    ManagedChannel secureChannel;
 
     public void run() {
+
+        // unsecure channel without TLS
         channel = ManagedChannelBuilder.forAddress("localhost", 50053).usePlaintext().build();
+
+        try {
+            //
+            SslContext sslContext = GrpcSslContexts.forClient().trustManager(new File("ssl/ca.crt")).build();
+
+            // secure channel with TLS
+            secureChannel = NettyChannelBuilder.forAddress("localhost", 50053)
+                    .sslContext(sslContext).build();
+        } catch (SSLException e) {
+            e.printStackTrace();
+        }
+        // request to server with secure channel
+        unaryCallWithDeadline(secureChannel);
 //        serverStreamingCall(channel);
 //        clientStreamingCall(channel);
 //        biDiStreamingCall(channel);
-        unaryCallWithDeadline(channel);
+//        unaryCallWithDeadline(channel);
 
         // shutdown the channel
         System.out.println("Shutting down the channel...");

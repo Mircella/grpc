@@ -3,23 +3,31 @@ package kz.mircella.grpc.weather;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
 
+import java.io.File;
 import java.io.IOException;
 
 public class WeatherServer {
 
     public static void main(String[] args) {
-        Server server = ServerBuilder.forPort(50053)
+        // plaintext not secure server
+//        Server server = ServerBuilder.forPort(50053)
+//                .addService(new WeatherServiceImpl())
+//                .build();
+
+        // ssl secure server
+        Server secureServer = ServerBuilder.forPort(50053)
                 .addService(new WeatherServiceImpl())
+                .useTransportSecurity(new File("ssl/server.crt"), new File("ssl/server.pem"))
                 .build();
 
         try {
-            server.start();
+            secureServer.start();
             Runtime.getRuntime().addShutdownHook(new Thread(() -> {
                 System.out.println("Received shutdown request");
-                server.shutdown();
+                secureServer.shutdown();
                 System.out.println("Server was stopped");
             }));
-            server.awaitTermination();
+            secureServer.awaitTermination();
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
