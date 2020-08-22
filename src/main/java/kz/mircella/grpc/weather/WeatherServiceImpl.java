@@ -1,5 +1,7 @@
 package kz.mircella.grpc.weather;
 
+import io.grpc.Context;
+import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 import org.apache.commons.lang3.RandomUtils;
 
@@ -19,8 +21,13 @@ public class WeatherServiceImpl extends WeatherServiceGrpc.WeatherServiceImplBas
     private static final Map<GeoLocation, WeatherResponse> weatherRepository = new ConcurrentHashMap<>();
 
     public WeatherServiceImpl() {
-        GeoLocation geoLocation = new GeoLocation(0, 0, 100, 100);
-        weatherRepository.put(geoLocation, randomWeatherResponse(geoLocation));
+        IntStream.iterate(-500, i -> i += 100).limit(10).forEach(
+                it -> {
+                    GeoLocation geoLocation = new GeoLocation(it, it, it + 100, it + 100);
+                    weatherRepository.put(geoLocation, randomWeatherResponse(geoLocation));
+                }
+        );
+        System.out.println("Weather Repository is initialized with " + weatherRepository.keySet().size() + " geolocations");
     }
 
     @Override
@@ -54,13 +61,21 @@ public class WeatherServiceImpl extends WeatherServiceGrpc.WeatherServiceImplBas
                 // client sends request
                 int latitude = request.getLatitude();
                 int longitude = request.getLongitude();
-                WeatherResponse weatherResponse = generateWeather(latitude, longitude);
-                weatherResponses.add(weatherResponse);
+                try {
+                    WeatherResponse weatherResponse = generateWeather(latitude, longitude);
+                    weatherResponses.add(weatherResponse);
+                } catch (Exception e) {
+                    responseObserver.onError(Status.INVALID_ARGUMENT
+                            .withDescription("Invalid geolocation")
+                            .augmentDescription(e.getLocalizedMessage())
+                            .asRuntimeException());
+                }
             }
 
             @Override
             public void onError(Throwable t) {
                 // client sends error
+                System.out.println("Error:" + t.getLocalizedMessage());
             }
 
             @Override
@@ -84,7 +99,8 @@ public class WeatherServiceImpl extends WeatherServiceGrpc.WeatherServiceImplBas
 
             @Override
             public void onError(Throwable t) {
-
+                // client sends error
+                System.out.println("Error:" + t.getLocalizedMessage());
             }
 
             @Override
@@ -92,6 +108,29 @@ public class WeatherServiceImpl extends WeatherServiceGrpc.WeatherServiceImplBas
                 responseObserver.onCompleted();
             }
         };
+    }
+
+    @Override
+    public void getWeatherWithDeadline(WeatherRequest request, StreamObserver<WeatherResponse> responseObserver) {
+        // Context is an object within RPC
+        Context context = Context.current();
+        // simulation of complex weather calculation
+        for (int i = 0; i < 3; i++) {
+            try {
+                // checking deadline was not exceeded
+                if (!context.isCancelled()) {
+                    Thread.sleep(1000);
+                } else {
+                    return;
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+        // returning calculated weather
+        responseObserver.onNext(generateWeather(request.getLatitude(), request.getLongitude()));
+        responseObserver.onCompleted();
     }
 
     private WeatherResponse calculateAverageWeather(List<WeatherResponse> weatherResponses) {
@@ -118,10 +157,8 @@ public class WeatherServiceImpl extends WeatherServiceGrpc.WeatherServiceImplBas
                 .stream()
                 .filter(it -> it.includes(latitude, longitude))
                 .findAny()
-                .orElseGet(() -> GeoLocation.includingWithDefaultDistance(latitude, longitude));
-        WeatherResponse randomWeatherResponse = randomWeatherResponse(geoLocation);
-        weatherRepository.put(geoLocation, randomWeatherResponse);
-        return randomWeatherResponse;
+                .orElseThrow(() -> new GeoLocationNotFound(latitude, longitude));
+        return weatherRepository.get(geoLocation);
     }
 
     private WeatherResponse randomWeatherResponse(GeoLocation geoLocation) {

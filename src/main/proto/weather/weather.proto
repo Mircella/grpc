@@ -35,7 +35,12 @@ service WeatherService {
   rpc getWeatherStream(WeatherRequest) returns (stream WeatherResponse) {};
 
   // Client Streaming API
+  // throws exception if geo location not found
   rpc getWeather(stream WeatherRequest) returns (WeatherResponse){};
 
+  // BiDi Streaming API
   rpc generateWeathers(stream WeatherRequest) returns (stream WeatherResponse){};
+
+  // unary call with set deadline
+  rpc getWeatherWithDeadline(WeatherRequest) returns (WeatherResponse){};
 }

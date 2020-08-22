@@ -24,13 +24,13 @@ public class CalculatorClient {
                 .usePlaintext()
                 .build();
 
-         doUnaryCall(channel);
+//         doUnaryCall(channel);
 
-         doServerStreamingCall(channel);
+//         doServerStreamingCall(channel);
 
-         doClientStreamingCall(channel);
+//         doClientStreamingCall(channel);
 
-         doBidiStreamingCall(channel);
+//         doBidiStreamingCall(channel);
 
          doErrorCall(channel);
 
@@ -60,7 +60,7 @@ public class CalculatorClient {
     private void doServerStreamingCall(ManagedChannel channel) {
         CalculatorServiceGrpc.CalculatorServiceBlockingStub stub = CalculatorServiceGrpc.newBlockingStub(channel);
 
-        long number = 120L;
+        long number = 140L;
 
         stub.primeNumberDecomposition(PrimeNumberDecompositionRequest.newBuilder()
                 .setNumber(number).build())

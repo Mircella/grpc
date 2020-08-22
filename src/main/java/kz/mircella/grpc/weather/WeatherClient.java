@@ -1,12 +1,12 @@
 package kz.mircella.grpc.weather;
 
-import io.grpc.ManagedChannel;
-import io.grpc.ManagedChannelBuilder;
+import io.grpc.*;
 import io.grpc.stub.StreamObserver;
 import org.apache.commons.lang3.RandomUtils;
 
 import java.util.Iterator;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.stream.IntStream;
 
@@ -16,13 +16,44 @@ public class WeatherClient {
 
     public void run() {
         channel = ManagedChannelBuilder.forAddress("localhost", 50053).usePlaintext().build();
-        serverStreamingCall(channel);
-        clientStreamingCall(channel);
-        biDiStreamingCall(channel);
+//        serverStreamingCall(channel);
+//        clientStreamingCall(channel);
+//        biDiStreamingCall(channel);
+        unaryCallWithDeadline(channel);
 
         // shutdown the channel
         System.out.println("Shutting down the channel...");
         channel.shutdown();
+    }
+
+    private void unaryCallWithDeadline(ManagedChannel channel) {
+        System.out.println("UnaryCall with Deadline...");
+        // creating client (stub), must be asynchronous
+        WeatherServiceGrpc.WeatherServiceBlockingStub syncClient = WeatherServiceGrpc.newBlockingStub(channel);
+        WeatherRequest request = WeatherRequest.newBuilder().setLatitude(0).setLongitude(0).build();
+        // setting deadline to rpc call
+        try {
+            WeatherResponse response = syncClient.withDeadline(Deadline.after(2, TimeUnit.SECONDS)).getWeatherWithDeadline(request);
+            System.out.println("Response received:" + response);
+        } catch (StatusRuntimeException e) {
+            if (e.getStatus() == Status.DEADLINE_EXCEEDED) {
+                System.out.println("Deadline exceeded");
+            } else {
+                e.printStackTrace();
+            }
+        }
+
+        try {
+            WeatherResponse response = syncClient.withDeadline(Deadline.after(4, TimeUnit.SECONDS)).getWeatherWithDeadline(request);
+            System.out.println("Response received:" + response);
+        } catch (StatusRuntimeException e) {
+            if (e.getStatus() == Status.DEADLINE_EXCEEDED) {
+                System.out.println("Deadline exceeded");
+            } else {
+                e.printStackTrace();
+            }
+        }
+
     }
 
     private void biDiStreamingCall(ManagedChannel channel) {
@@ -47,7 +78,9 @@ public class WeatherClient {
 
             @Override
             public void onError(Throwable t) {
-                // ignore
+                // error occurred
+                System.out.println("Error occurred: " + t.getLocalizedMessage());
+                latch.countDown();
             }
 
             @Override
@@ -105,7 +138,9 @@ public class WeatherClient {
 
             @Override
             public void onError(Throwable t) {
-
+                // error handling
+                System.out.println("Error occurred: " + t.getLocalizedMessage());
+                latch.countDown();
             }
 
             @Override
@@ -124,8 +159,8 @@ public class WeatherClient {
             System.out.println("Sending request " + it);
             requestStreamObserver.onNext(
                     WeatherRequest.newBuilder()
-                            .setLongitude(RandomUtils.nextInt(0, 1000) + it)
-                            .setLatitude(RandomUtils.nextInt(0, 1000) - it)
+                            .setLongitude(RandomUtils.nextInt(0, 500) + it)
+                            .setLatitude(RandomUtils.nextInt(0, 500) - it)
                             .build());
         });
         requestStreamObserver.onCompleted();

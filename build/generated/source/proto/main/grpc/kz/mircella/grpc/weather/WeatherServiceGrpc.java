@@ -120,6 +120,37 @@ public final class WeatherServiceGrpc {
     return getGenerateWeathersMethod;
   }
 
+  private static volatile io.grpc.MethodDescriptor<kz.mircella.grpc.weather.WeatherRequest,
+      kz.mircella.grpc.weather.WeatherResponse> getGetWeatherWithDeadlineMethod;
+
+  @io.grpc.stub.annotations.RpcMethod(
+      fullMethodName = SERVICE_NAME + '/' + "getWeatherWithDeadline",
+      requestType = kz.mircella.grpc.weather.WeatherRequest.class,
+      responseType = kz.mircella.grpc.weather.WeatherResponse.class,
+      methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
+  public static io.grpc.MethodDescriptor<kz.mircella.grpc.weather.WeatherRequest,
+      kz.mircella.grpc.weather.WeatherResponse> getGetWeatherWithDeadlineMethod() {
+    io.grpc.MethodDescriptor<kz.mircella.grpc.weather.WeatherRequest, kz.mircella.grpc.weather.WeatherResponse> getGetWeatherWithDeadlineMethod;
+    if ((getGetWeatherWithDeadlineMethod = WeatherServiceGrpc.getGetWeatherWithDeadlineMethod) == null) {
+      synchronized (WeatherServiceGrpc.class) {
+        if ((getGetWeatherWithDeadlineMethod = WeatherServiceGrpc.getGetWeatherWithDeadlineMethod) == null) {
+          WeatherServiceGrpc.getGetWeatherWithDeadlineMethod = getGetWeatherWithDeadlineMethod =
+              io.grpc.MethodDescriptor.<kz.mircella.grpc.weather.WeatherRequest, kz.mircella.grpc.weather.WeatherResponse>newBuilder()
+              .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
+              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "getWeatherWithDeadline"))
+              .setSampledToLocalTracing(true)
+              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  kz.mircella.grpc.weather.WeatherRequest.getDefaultInstance()))
+              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  kz.mircella.grpc.weather.WeatherResponse.getDefaultInstance()))
+              .setSchemaDescriptor(new WeatherServiceMethodDescriptorSupplier("getWeatherWithDeadline"))
+              .build();
+        }
+      }
+    }
+    return getGetWeatherWithDeadlineMethod;
+  }
+
   /**
    * Creates a new async stub that supports all call types for the service
    */
@@ -181,6 +212,7 @@ public final class WeatherServiceGrpc {
     /**
      * <pre>
      * Client Streaming API
+     * throws exception if geo location not found
      * </pre>
      */
     public io.grpc.stub.StreamObserver<kz.mircella.grpc.weather.WeatherRequest> getWeather(
@@ -189,10 +221,23 @@ public final class WeatherServiceGrpc {
     }
 
     /**
+     * <pre>
+     * BiDi Streaming API
+     * </pre>
      */
     public io.grpc.stub.StreamObserver<kz.mircella.grpc.weather.WeatherRequest> generateWeathers(
         io.grpc.stub.StreamObserver<kz.mircella.grpc.weather.WeatherResponse> responseObserver) {
       return asyncUnimplementedStreamingCall(getGenerateWeathersMethod(), responseObserver);
+    }
+
+    /**
+     * <pre>
+     * unary call with set deadline
+     * </pre>
+     */
+    public void getWeatherWithDeadline(kz.mircella.grpc.weather.WeatherRequest request,
+        io.grpc.stub.StreamObserver<kz.mircella.grpc.weather.WeatherResponse> responseObserver) {
+      asyncUnimplementedUnaryCall(getGetWeatherWithDeadlineMethod(), responseObserver);
     }
 
     @java.lang.Override public final io.grpc.ServerServiceDefinition bindService() {
@@ -218,6 +263,13 @@ public final class WeatherServiceGrpc {
                 kz.mircella.grpc.weather.WeatherRequest,
                 kz.mircella.grpc.weather.WeatherResponse>(
                   this, METHODID_GENERATE_WEATHERS)))
+          .addMethod(
+            getGetWeatherWithDeadlineMethod(),
+            asyncUnaryCall(
+              new MethodHandlers<
+                kz.mircella.grpc.weather.WeatherRequest,
+                kz.mircella.grpc.weather.WeatherResponse>(
+                  this, METHODID_GET_WEATHER_WITH_DEADLINE)))
           .build();
     }
   }
@@ -250,6 +302,7 @@ public final class WeatherServiceGrpc {
     /**
      * <pre>
      * Client Streaming API
+     * throws exception if geo location not found
      * </pre>
      */
     public io.grpc.stub.StreamObserver<kz.mircella.grpc.weather.WeatherRequest> getWeather(
@@ -259,11 +312,25 @@ public final class WeatherServiceGrpc {
     }
 
     /**
+     * <pre>
+     * BiDi Streaming API
+     * </pre>
      */
     public io.grpc.stub.StreamObserver<kz.mircella.grpc.weather.WeatherRequest> generateWeathers(
         io.grpc.stub.StreamObserver<kz.mircella.grpc.weather.WeatherResponse> responseObserver) {
       return asyncBidiStreamingCall(
           getChannel().newCall(getGenerateWeathersMethod(), getCallOptions()), responseObserver);
+    }
+
+    /**
+     * <pre>
+     * unary call with set deadline
+     * </pre>
+     */
+    public void getWeatherWithDeadline(kz.mircella.grpc.weather.WeatherRequest request,
+        io.grpc.stub.StreamObserver<kz.mircella.grpc.weather.WeatherResponse> responseObserver) {
+      asyncUnaryCall(
+          getChannel().newCall(getGetWeatherWithDeadlineMethod(), getCallOptions()), request, responseObserver);
     }
   }
 
@@ -291,6 +358,16 @@ public final class WeatherServiceGrpc {
       return blockingServerStreamingCall(
           getChannel(), getGetWeatherStreamMethod(), getCallOptions(), request);
     }
+
+    /**
+     * <pre>
+     * unary call with set deadline
+     * </pre>
+     */
+    public kz.mircella.grpc.weather.WeatherResponse getWeatherWithDeadline(kz.mircella.grpc.weather.WeatherRequest request) {
+      return blockingUnaryCall(
+          getChannel(), getGetWeatherWithDeadlineMethod(), getCallOptions(), request);
+    }
   }
 
   /**
@@ -306,11 +383,23 @@ public final class WeatherServiceGrpc {
         io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
       return new WeatherServiceFutureStub(channel, callOptions);
     }
+
+    /**
+     * <pre>
+     * unary call with set deadline
+     * </pre>
+     */
+    public com.google.common.util.concurrent.ListenableFuture<kz.mircella.grpc.weather.WeatherResponse> getWeatherWithDeadline(
+        kz.mircella.grpc.weather.WeatherRequest request) {
+      return futureUnaryCall(
+          getChannel().newCall(getGetWeatherWithDeadlineMethod(), getCallOptions()), request);
+    }
   }
 
   private static final int METHODID_GET_WEATHER_STREAM = 0;
-  private static final int METHODID_GET_WEATHER = 1;
-  private static final int METHODID_GENERATE_WEATHERS = 2;
+  private static final int METHODID_GET_WEATHER_WITH_DEADLINE = 1;
+  private static final int METHODID_GET_WEATHER = 2;
+  private static final int METHODID_GENERATE_WEATHERS = 3;
 
   private static final class MethodHandlers<Req, Resp> implements
       io.grpc.stub.ServerCalls.UnaryMethod<Req, Resp>,
@@ -331,6 +420,10 @@ public final class WeatherServiceGrpc {
       switch (methodId) {
         case METHODID_GET_WEATHER_STREAM:
           serviceImpl.getWeatherStream((kz.mircella.grpc.weather.WeatherRequest) request,
+              (io.grpc.stub.StreamObserver<kz.mircella.grpc.weather.WeatherResponse>) responseObserver);
+          break;
+        case METHODID_GET_WEATHER_WITH_DEADLINE:
+          serviceImpl.getWeatherWithDeadline((kz.mircella.grpc.weather.WeatherRequest) request,
               (io.grpc.stub.StreamObserver<kz.mircella.grpc.weather.WeatherResponse>) responseObserver);
           break;
         default:
@@ -403,6 +496,7 @@ public final class WeatherServiceGrpc {
               .addMethod(getGetWeatherStreamMethod())
               .addMethod(getGetWeatherMethod())
               .addMethod(getGenerateWeathersMethod())
+              .addMethod(getGetWeatherWithDeadlineMethod())
               .build();
         }
       }
