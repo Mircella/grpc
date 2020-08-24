@@ -30,15 +30,21 @@ repositories {
 
 dependencies {
     // dependencies for gRPC by Google
+    // netty-shaded for secure TLS connection (shaded - includes ssl libraries )
     implementation 'io.grpc:grpc-netty-shaded:1.31.1'
     implementation 'io.grpc:grpc-protobuf:1.31.1'
     implementation 'io.grpc:grpc-stub:1.31.1'
-    implementation("org.apache.commons:commons-lang3:3.10")
-    implementation("commons-io:commons-io:2.6")
-    // reflection
-    implementation "io.grpc:grpc-services:1.31.1"
 
-    testCompile group: 'junit', name: 'junit', version: '4.12'
+    // reflection
+    implementation 'io.grpc:grpc-services:1.31.1'
+
+    // mongo connection
+    implementation 'org.mongodb:mongodb-driver-sync:4.1.0'
+
+    implementation 'org.apache.commons:commons-lang3:3.10'
+    implementation 'commons-io:commons-io:2.6'
+
+    testImplementation 'junit:junit:4.12'
 }
 
 // if you have source imports issues, add the below
