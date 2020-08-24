@@ -2,6 +2,7 @@ package kz.mircella.grpc.weather;
 
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
+import io.grpc.protobuf.services.ProtoReflectionService;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,7 +18,9 @@ public class WeatherServer {
         // ssl secure server
         Server secureServer = ServerBuilder.forPort(50053)
                 .addService(new WeatherServiceImpl())
-                .useTransportSecurity(new File("ssl/server.crt"), new File("ssl/server.pem"))
+                // enabling reflection on server, reflects all services added before
+                .addService(ProtoReflectionService.newInstance())
+//                .useTransportSecurity(new File("ssl/server.crt"), new File("ssl/server.pem"))
                 .build();
 
         try {
