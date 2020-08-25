@@ -1,0 +1,33 @@
+spring:
+  application:
+    name: grpc-spring-security-demo
+
+logging:
+  level:
+    kz.mircella.grpc.authentication: DEBUG
+
+server:
+  port: 50055
+
+management:
+  context-path: /actuator
+  security:
+    enabled: true
+    roles: ADMIN
+
+security:
+  basic:
+    realm: gRPC Spring Security
+  enable-csrf: false
+  oauth2:
+    resource:
+      jwt:
+        key-value: mypassword
+  sessions: stateless
+  user:
+    name: grpcspring
+    password: grpcspring
+    role: ADMIN
+
+grpc:
+  port: 7080

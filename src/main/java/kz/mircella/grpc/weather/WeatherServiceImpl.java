@@ -53,7 +53,7 @@ public class WeatherServiceImpl extends WeatherServiceGrpc.WeatherServiceImplBas
     @Override
     // StreamObserver of requests is returned as client requests are asynchronous and we need to handle each request in a stream
     public StreamObserver<WeatherRequest> getWeather(StreamObserver<WeatherResponse> responseObserver) {
-        return new StreamObserver<>() {
+        return new StreamObserver<WeatherRequest>() {
             final List<WeatherResponse> weatherResponses = new ArrayList<>();
 
             @Override

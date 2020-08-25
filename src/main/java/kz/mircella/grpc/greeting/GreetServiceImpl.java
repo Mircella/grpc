@@ -4,13 +4,14 @@ import io.grpc.stub.StreamObserver;
 import kz.mircella.grpc.greet.GreetRequest;
 import kz.mircella.grpc.greet.GreetResponse;
 import kz.mircella.grpc.greet.GreetServiceGrpc;
+import kz.mircella.grpc.greet.Greeting;
 
 public class GreetServiceImpl extends GreetServiceGrpc.GreetServiceImplBase {
 
     @Override
     public void greet(GreetRequest request, StreamObserver<GreetResponse> responseObserver) {
         // parsing request
-        var greeting = request.getGreeting();
+        Greeting greeting = request.getGreeting();
         String firstName = greeting.getFirstName();
         String lastName = greeting.getLastName();
         String result = "Hello, " + firstName + " " + lastName;

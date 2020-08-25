@@ -101,7 +101,7 @@ public class BlogClient {
 
     private Blog randomBlog() {
         String blogTitle = "V1:Harry Potter:" + RandomUtils.nextInt(0, 7);
-        String content = "V1:" + blogTitle + " is great book";
+        String content = blogTitle + " is great book";
         String authorId = "V1:Author:" + RandomUtils.nextInt(0, 100);
         return Blog.newBuilder().setTitle(blogTitle).setContent(content).setAuthorId(authorId).build();
     }

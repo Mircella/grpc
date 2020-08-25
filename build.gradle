@@ -1,42 +1,109 @@
+buildscript {
+    ext {
+        springBootVersion = '1.5.6.RELEASE'
+        protobufGradlePluginVersion = '0.8.13'
+    }
+
+    repositories {
+        mavenCentral()
+        jcenter()
+    }
+
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+        classpath("com.google.protobuf:protobuf-gradle-plugin:${protobufGradlePluginVersion}")
+    }
+}
+
 plugins {
     id 'java'
+    id 'org.springframework.boot' version '1.5.6.RELEASE'
+//    id 'io.spring.dependency-management' version '1.0.10.RELEASE'
     // gradle plugin for code generation
     id 'com.google.protobuf' version '0.8.12'
     id 'idea'
 }
 
+ext {
+    protocVersion = '3.3.0'
+    grpcVersion = '1.31.1'
+    grpcSpringBootVersion = '3.5.7'
+    assertjVersion = '3.8.0'
+    applicationName = 'grpc-spring-security'
+    applicationDefaultJvmArgs = [
+            '-Xmx2g',
+            '-Xms1g',
+            "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=9080"
+    ]
+}
+
 protobuf {
     protoc {
-        artifact = "com.google.protobuf:protoc:3.12.0"
+        artifact = "com.google.protobuf:protoc:${protocVersion}"
     }
     plugins {
         grpc {
-            artifact = 'io.grpc:protoc-gen-grpc-java:1.31.1'
+            artifact = "io.grpc:protoc-gen-grpc-java:${grpcVersion}"
         }
     }
+
     generateProtoTasks {
-        all()*.plugins {
-            grpc {}
+        ofSourceSet('main').each { task ->
+            task.builtins {
+                java{
+                    outputSubDir = 'protoGen'
+                }
+            }
+
+            task.plugins {
+                grpc {
+                    outputSubDir = 'protoGen'
+                }
+            }
         }
     }
+
+    generatedFilesBaseDir = "${projectDir}/src/"
 }
 
 group 'kz.mircella'
 version '1.0-SNAPSHOT'
 
 repositories {
+    jcenter()
     mavenCentral()
 }
 
+jar {
+    baseName = applicationName
+}
+
+
+
+
 dependencies {
+    // spring dependencies
+    implementation('org.springframework.boot:spring-boot-starter-web')
+    implementation('org.springframework.boot:spring-boot-starter-actuator')
+    implementation('org.springframework.boot:spring-boot-starter-security')
+    implementation('org.springframework.security.oauth:spring-security-oauth2')
+//    implementation('org.springframework.security.oauth:spring-security-oauth2:2.5.0.RELEASE')
+//    implementation('org.springframework.security:spring-security-jwt:1.1.1.RELEASE')
+    implementation('org.springframework.security:spring-security-jwt')
+    implementation "jakarta.xml.bind:jakarta.xml.bind-api:2.3.2"
+    implementation "org.glassfish.jaxb:jaxb-runtime:2.3.2"
+
     // dependencies for gRPC by Google
     // netty-shaded for secure TLS connection (shaded - includes ssl libraries )
-    implementation 'io.grpc:grpc-netty-shaded:1.31.1'
-    implementation 'io.grpc:grpc-protobuf:1.31.1'
-    implementation 'io.grpc:grpc-stub:1.31.1'
+    implementation "io.grpc:grpc-netty-shaded:${grpcVersion}"
+    implementation "io.grpc:grpc-protobuf:${grpcVersion}"
+    implementation "io.grpc:grpc-stub:${grpcVersion}"
+
+    implementation "io.github.lognet:grpc-spring-boot-starter:${grpcSpringBootVersion}"
+//    implementation("org.lognet:grpc-spring-boot-starter:${grpcSpringBootVersion}")
 
     // reflection
-    implementation 'io.grpc:grpc-services:1.31.1'
+    implementation "io.grpc:grpc-services:${grpcVersion}"
 
     // mongo connection
     implementation 'org.mongodb:mongodb-driver-sync:4.1.0'
@@ -44,14 +111,35 @@ dependencies {
     implementation 'org.apache.commons:commons-lang3:3.10'
     implementation 'commons-io:commons-io:2.6'
 
+    implementation('org.projectlombok:lombok:1.18.12')
     testImplementation 'junit:junit:4.12'
+    testImplementation('org.springframework.boot:spring-boot-starter-test') {
+        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+    }
+    testImplementation("org.assertj:assertj-core:${assertjVersion}")
 }
 
-// if you have source imports issues, add the below
-sourceSets.main.java.srcDir new File(buildDir, 'generated/source')
+// in case of source imports issues
+sourceSets {
+    main {
+        java {
+            srcDir 'src/main/protoGen'
+        }
+    }
+}
+
+// Default protos' generated folder, changed to protoGen
+//sourceSets.main.java.srcDir new File(buildDir, 'generated/source')
 idea {
     module {
         // Marks the already(!) added srcDir as "generated"
         generatedSourceDirs += file('build/generated/source')
     }
 }
+
+task cleanProtoGen{
+    doFirst{
+        delete("${projectDir}/src/main/protoGen")
+    }
+}
+clean.dependsOn cleanProtoGen

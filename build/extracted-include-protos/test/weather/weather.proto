@@ -1,0 +1,46 @@
+syntax = "proto3";
+
+package weather;
+
+option java_package = "kz.mircella.grpc.weather";
+option java_multiple_files = true;
+
+message Temperature {
+  double degree = 1;
+  Unit unit = 2;
+
+  enum Unit {
+    CELSIUS = 0;
+    FAHRENHEIT = 1;
+  }
+}
+
+message Humidity {
+  double percentage = 1;
+}
+
+message WeatherRequest {
+  int32 longitude = 1;
+  int32 latitude = 2;
+}
+
+message WeatherResponse {
+  Temperature temperature = 1;
+  Humidity humidity = 2;
+}
+
+service WeatherService {
+
+  // Server Streaming API
+  rpc getWeatherStream(WeatherRequest) returns (stream WeatherResponse) {};
+
+  // Client Streaming API
+  // throws exception if geo location not found
+  rpc getWeather(stream WeatherRequest) returns (WeatherResponse){};
+
+  // BiDi Streaming API
+  rpc generateWeathers(stream WeatherRequest) returns (stream WeatherResponse){};
+
+  // unary call with set deadline
+  rpc getWeatherWithDeadline(WeatherRequest) returns (WeatherResponse){};
+}

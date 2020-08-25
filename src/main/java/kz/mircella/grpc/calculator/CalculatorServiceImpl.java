@@ -41,7 +41,7 @@ public class CalculatorServiceImpl extends CalculatorServiceGrpc.CalculatorServi
     @Override
     public StreamObserver<ComputeAverageRequest> computeAverage(StreamObserver<ComputeAverageResponse> responseObserver) {
 
-        return new StreamObserver<>() {
+        return new StreamObserver<ComputeAverageRequest>() {
             // running sum and count
             int sum = 0;
             int count = 0;
@@ -76,7 +76,7 @@ public class CalculatorServiceImpl extends CalculatorServiceGrpc.CalculatorServi
     @Override
     public StreamObserver<FindMaximumRequest> findMaximum(StreamObserver<FindMaximumResponse> responseObserver) {
 
-        return new StreamObserver<>() {
+        return new StreamObserver<FindMaximumRequest>() {
 
             int currentMaximum = 0;
 

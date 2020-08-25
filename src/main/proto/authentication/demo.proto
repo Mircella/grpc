@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+package authentication;
+
+option java_package = "kz.mircella.grpc.demo";
+option java_multiple_files = true;
+
+service DemoService {
+  rpc Fibonacci(FibonacciRequest) returns (FibonacciResponse) {}
+
+  rpc Factorial(FactorialRequest) returns (FactorialResponse) {}
+}
+
+message FibonacciRequest {
+  int32 value = 1;
+}
+
+message FibonacciResponse {
+  int32 value = 1;
+}
+
+message FactorialRequest {
+  int32 value = 1;
+}
+
+message FactorialResponse {
+  int32 value = 1;
+}
